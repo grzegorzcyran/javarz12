@@ -4,6 +4,13 @@ public class Car {
     private String name;
     private String color;
 
+    public Car() {
+    }
+
+    public Car(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
