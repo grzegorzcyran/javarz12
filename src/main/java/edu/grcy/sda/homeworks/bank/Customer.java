@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Customer {
     private String name;
@@ -92,5 +93,26 @@ public class Customer {
     @Override
     public int hashCode() {
         return Objects.hash(name, surname);
+    }
+
+    public Optional<Account> findAccount(String accountNo) {
+        return accountList.stream()
+                .filter(x -> x.getAccountNo().equals(accountNo))
+                .findFirst();
+    }
+
+    public StringBuilder getCustomerInfo(boolean withAccounts, boolean withBalance) {
+        return new StringBuilder("\n\n")
+                .append(surname)
+                .append(" ")
+                .append(name)
+                .append(withAccounts ? getAccountsInfo(withBalance) : "");
+    }
+
+    private StringBuilder getAccountsInfo(boolean withBalance) {
+        StringBuilder accountsInfo = new StringBuilder();
+        accountList.stream()
+                .forEach(x -> accountsInfo.append(x.getSingleAccountInfo(withBalance)));
+        return accountsInfo;
     }
 }

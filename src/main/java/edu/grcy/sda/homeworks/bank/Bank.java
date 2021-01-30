@@ -1,10 +1,13 @@
 package edu.grcy.sda.homeworks.bank;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Bank {
     private static Integer customerNumber = 0;
+    private static Integer accountNumber = 0;
 
     private String name;
     private List<Customer> customers;
@@ -13,6 +16,12 @@ public class Bank {
         String newCustomerNumber = customerNumber.toString();
         customerNumber++;
         return newCustomerNumber;
+    }
+
+    private String getNextAccountNumber() {
+        String newAccountNumber = accountNumber.toString();
+        accountNumber++;
+        return newAccountNumber;
     }
 
     public Bank(String name) {
@@ -51,5 +60,60 @@ public class Bank {
         }
         //
         return false;
+    }
+
+    public boolean addAccountForCustomer(String name, String surname, AccountType accountType) {
+        Optional<Customer> customerToFind = findCustomer(name, surname);
+        if(customerToFind.isPresent()) {
+            return customerToFind.get().addAccount(getNextAccountNumber(), accountType);
+        }
+        return false;
+    }
+
+    public boolean removeAccountForCustomer(String name, String surname, String accountNo) {
+        Optional<Customer> customerToFind = findCustomer(name, surname);
+        if(customerToFind.isPresent()) {
+            return customerToFind.get().removeAccount(accountNo);
+        }
+        return false;
+    }
+
+    public boolean deposit(String name, String surname, String accountNo, BigDecimal amount) {
+        Optional<Customer> customerToFind = findCustomer(name, surname);
+        if(customerToFind.isPresent()) {
+            Customer customerFound = customerToFind.get();
+            Optional<Account> possibleAccount = customerFound.findAccount(accountNo);
+            if(possibleAccount.isPresent()) {
+
+                return customerFound.depositOnGivenAccount(accountNo, amount);
+            }
+        }
+        return false;
+    }
+
+    public boolean withdraw(String name, String surname, String accountNo, BigDecimal amount) {
+        Optional<Customer> customerToFind = findCustomer(name, surname);
+        if(customerToFind.isPresent()) {
+            Customer customerFound = customerToFind.get();
+            Optional<Account> possibleAccount = customerFound.findAccount(accountNo);
+            if(possibleAccount.isPresent()) {
+                return customerFound.withdrawFromGivenAccount(accountNo, amount);
+            }
+        }
+        return false;
+    }
+
+    private Optional<Customer> findCustomer(String name, String surname) {
+
+        return customers.stream()
+                .filter(x -> x.equals(new Customer(name, surname)))
+                .findFirst();
+    }
+
+    public String getAllCustomersInfo(boolean withAccounts, boolean withBalance) {
+        StringBuilder allCustomersInfo = new StringBuilder(name);
+        customers.forEach(x -> allCustomersInfo.append(x.getCustomerInfo(withAccounts, withBalance)));
+
+        return allCustomersInfo.toString();
     }
 }

@@ -56,4 +56,11 @@ public class Account {
     public int hashCode() {
         return Objects.hash(accountNo);
     }
+
+    public StringBuilder getSingleAccountInfo(boolean withBalance) {
+        return new StringBuilder("\n\t")
+                .append(accountNo)
+                .append(" ")
+                .append(withBalance ? balance : "");
+    }
 }
